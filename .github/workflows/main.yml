@@ -1,0 +1,44 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup .NET Core SDK
+              uses: actions/setup-dotnet@v1
+              with:
+                  dotnet-version: 7.x
+                  include-prerelease: true
+
+            - name: Publish .NET Core Project
+              run: dotnet publish Bitobrian.Wow.Addon.IDE/Bitobrian.Wow.Addon.IDE.csproj -c Release -o release --nologo
+
+            - name: copy index.html to 404.html
+              run: cp release/wwwroot/index.html release/wwwroot/404.html
+
+            - name: Add .nojekyll file
+              run: touch release/wwwroot/.nojekyll
+
+            - name: Commit wwwroot to GitHub Pages
+              uses: JamesIves/github-pages-deploy-action@3.7.1
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  BRANCH: gh-pages
+                  FOLDER: release/wwwroot
