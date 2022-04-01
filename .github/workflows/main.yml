@@ -30,6 +30,10 @@ jobs:
             - name: Publish .NET Core Project
               run: dotnet publish Bitobrian.Wow.Addon.IDE/Bitobrian.Wow.Addon.IDE.csproj -c Release -o release --nologo
 
+            # changes the base-tag in index.html from '/' to 'Wow-Addon-Designer' to match GitHub Pages repository subdirectory
+            - name: Change base-tag in index.html from / to Wow-Addon-Designer
+              run: sed -i 's/<base href="\/" \/>/<base href="\/Wow-Addon-Designer\/" \/>/g' release/wwwroot/index.html
+              
             - name: copy index.html to 404.html
               run: cp release/wwwroot/index.html release/wwwroot/404.html
 
